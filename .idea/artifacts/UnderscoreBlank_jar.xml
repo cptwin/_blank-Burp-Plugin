@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="UnderscoreBlank:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/UnderscoreBlank_jar</output-path>
+    <root id="archive" name="UnderscoreBlank.jar">
+      <element id="module-output" name="UnderscoreBlank" />
+    </root>
+  </artifact>
+</component>
