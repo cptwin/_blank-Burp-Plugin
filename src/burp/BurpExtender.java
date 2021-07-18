@@ -20,8 +20,7 @@ public class BurpExtender implements IBurpExtender, IScannerCheck {
     public BurpExtender()
     {
         this.name = "UnderscoreBlank";
-        this.version = "0.1.1 alpha";
-        System.out.println("HELLO WORLD!");
+        this.version = "0.1.2 alpha";
     }
 
     @Override
@@ -41,25 +40,22 @@ public class BurpExtender implements IBurpExtender, IScannerCheck {
 
     @Override
     public List<IScanIssue> doPassiveScan(IHttpRequestResponse baseRequestResponse) {
-        String response = helpers.bytesToString(baseRequestResponse.getResponse());
-        Pattern p = Pattern.compile(".*target=\"_blank\".*", Pattern.DOTALL);
-        Matcher m = p.matcher(response);
-        //Check match for html pages only
-        if (m.matches()) {
-            List<IScanIssue> issues = new ArrayList<>(1);
-            issues.add(new UnderscoreBlankIssue(baseRequestResponse));
-            return issues;
-        }
-        return null;
+        return checkForVuln(baseRequestResponse);
     }
 
     @Override
     public List<IScanIssue> doActiveScan(IHttpRequestResponse baseRequestResponse, IScannerInsertionPoint insertionPoint) {
+        return checkForVuln(baseRequestResponse);
+    }
+
+    public List<IScanIssue> checkForVuln(IHttpRequestResponse baseRequestResponse) {
         String response = helpers.bytesToString(baseRequestResponse.getResponse());
-        Pattern p = Pattern.compile(".*target=\"_blank\".*", Pattern.DOTALL);
-        Matcher m = p.matcher(response);
+        Pattern patternUnderscoreBlank = Pattern.compile(".*target=\"_blank\".*", Pattern.DOTALL);
+        Matcher matcherUnderscoreBlank = patternUnderscoreBlank.matcher(response);
+        Pattern patternRelOpener = Pattern.compile(".*rel=\"opener\".*", Pattern.DOTALL);
+        Matcher matcherRelOpener = patternRelOpener.matcher(response);
         //Check match for html pages only
-        if (m.matches()) {
+        if (matcherUnderscoreBlank.matches() && matcherRelOpener.matches()) {
             List<IScanIssue> issues = new ArrayList<>(1);
             issues.add(new UnderscoreBlankIssue(baseRequestResponse));
             return issues;
